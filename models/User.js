@@ -3,24 +3,15 @@ var bcrypt = require('bcrypt-nodejs');
 var crypto = require('crypto');
 
 var userSchema = new mongoose.Schema({
-  email: { type: String, unique: true },
+  userName: { type: String, unique: true },
   password: String,
-
-  facebook: String,
-  twitter: String,
-  google: String,
-  github: String,
-  linkedin: String,
   tokens: Array,
 
   profile: {
     name: { type: String, default: '' },
-    gender: { type: String, default: '' },
-    location: { type: String, default: '' },
-    website: { type: String, default: '' },
     picture: { type: String, default: '' }
   },
-
+  connectionMapping: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date
 });
@@ -65,13 +56,13 @@ userSchema.methods.comparePassword = function(candidatePassword, cb) {
 
 userSchema.methods.gravatar = function(size, defaults) {
   if (!size) size = 200;
-  if (!defaults) defaults = 'retro';
+  if (!defaults) defaults = 'monsterid';
 
-  if (!this.email) {
+  if (!this.userName) {
     return 'https://gravatar.com/avatar/?s=' + size + '&d=' + defaults;
   }
 
-  var md5 = crypto.createHash('md5').update(this.email);
+  var md5 = crypto.createHash('md5').update(this.userName + "@sears.co.il");
   return 'https://gravatar.com/avatar/' + md5.digest('hex').toString() + '?s=' + size + '&d=' + defaults;
 };
 

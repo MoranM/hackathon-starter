@@ -23,7 +23,6 @@ exports.getLogin = function(req, res) {
  */
 
 exports.postLogin = function(req, res, next) {
-  req.assert('email', 'Email is not valid').isEmail();
   req.assert('password', 'Password cannot be blank').notEmpty();
 
   var errors = req.validationErrors();
@@ -77,7 +76,6 @@ exports.getSignup = function(req, res) {
  */
 
 exports.postSignup = function(req, res, next) {
-  req.assert('email', 'Email is not valid').isEmail();
   req.assert('password', 'Password must be at least 4 characters long').len(4);
   req.assert('confirmPassword', 'Passwords do not match').equals(req.body.password);
 
@@ -89,14 +87,14 @@ exports.postSignup = function(req, res, next) {
   }
 
   var user = new User({
-    email: req.body.email,
+    userName: req.body.userName,
     password: req.body.password
   });
 
   user.save(function(err) {
     if (err) {
       if (err.code === 11000) {
-        req.flash('errors', { msg: 'User with that email already exists.' });
+        req.flash('errors', { msg: 'User with that name already exists.' });
       }
       return res.redirect('/signup');
     }
@@ -126,11 +124,8 @@ exports.getAccount = function(req, res) {
 exports.postUpdateProfile = function(req, res, next) {
   User.findById(req.user.id, function(err, user) {
     if (err) return next(err);
-    user.email = req.body.email || '';
+    user.userName = req.body.userName || '';
     user.profile.name = req.body.name || '';
-    user.profile.gender = req.body.gender || '';
-    user.profile.location = req.body.location || '';
-    user.profile.website = req.body.website || '';
 
     user.save(function(err) {
       if (err) return next(err);
@@ -181,28 +176,5 @@ exports.postDeleteAccount = function(req, res, next) {
     if (err) return next(err);
     req.logout();
     res.redirect('/');
-  });
-};
-
-/**
- * GET /account/unlink/:provider
- * Unlink OAuth2 provider from the current user.
- * @param provider
- * @param id - User ObjectId
- */
-
-exports.getOauthUnlink = function(req, res, next) {
-  var provider = req.params.provider;
-  User.findById(req.user.id, function(err, user) {
-    if (err) return next(err);
-
-    user[provider] = undefined;
-    user.tokens = _.reject(user.tokens, function(token) { return token.kind === provider; });
-
-    user.save(function(err) {
-      if (err) return next(err);
-      req.flash('info', { msg: provider + ' account has been unlinked.' });
-      res.redirect('/account');
-    });
   });
 };
