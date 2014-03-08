@@ -11,7 +11,7 @@ var userSchema = new mongoose.Schema({
     name: { type: String, default: '' },
     picture: { type: String, default: '' }
   },
-  connectionMapping: String,
+  connectionMapping:{ type: String, default: '' },
   resetPasswordToken: String,
   resetPasswordExpires: Date
 });

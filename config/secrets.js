@@ -1,5 +1,5 @@
 module.exports = {
-  db: 'mongodb://localhost:27017/test',
+  db: 'mongodb://localhost:27017/api-proxy',
 
   sessionSecret: "Sears_Israel_Mobile_Team_Roles",
 

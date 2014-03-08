@@ -10,28 +10,10 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var expressValidator = require('express-validator');
 var connectAssets = require('connect-assets');
-
-
-
-/**
- * Load controllers.
- */
-
-var homeController = require('./controllers/home');
-var userController = require('./controllers/user');
-var forgotController = require('./controllers/forgot');
-var resetController = require('./controllers/reset');
-
-/**
- * API keys + Passport configuration.
- */
+var fs = require("fs");
+var routesPath = './routes/';
 
 var secrets = require('./config/secrets');
-var passportConf = require('./config/passport');
-
-/**
- * Create Express server.
- */
 
 var app = express();
 
@@ -93,31 +75,11 @@ app.use(function(req, res) {
 });
 app.use(express.errorHandler());
 
-/**
- * Application routes.
- */
-
-app.get('/', homeController.index);
-app.get('/login', userController.getLogin);
-app.post('/login', userController.postLogin);
-app.get('/logout', userController.logout);
-app.get('/forgot', forgotController.getForgot);
-app.post('/forgot', forgotController.postForgot);
-app.get('/reset/:token', resetController.getReset);
-app.post('/reset/:token', resetController.postReset);
-app.get('/signup', userController.getSignup);
-app.post('/signup', userController.postSignup);
-app.get('/account', passportConf.isAuthenticated, userController.getAccount);
-app.post('/account/profile', passportConf.isAuthenticated, userController.postUpdateProfile);
-app.post('/account/password', passportConf.isAuthenticated, userController.postUpdatePassword);
-app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
-
-
-
-
-/**
- * Start Express server.
- */
+//dynamically load application routes
+fs.readdirSync(routesPath).forEach(function (file) {
+    var route = routesPath + file;
+    require(route)(app);
+});
 
 app.listen(app.get('port'), function() {
   console.log("✔ Express server listening on port %d in %s mode", app.get('port'), app.settings.env);

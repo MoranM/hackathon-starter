@@ -11,6 +11,10 @@
       ul.nav.navbar-nav
         li(class=title=='Home'?'active':undefined)
           a(href='/') Home
+        if(user)
+          li(class=title=='Settings'?'active':undefined)
+            a(href='/settings') Settings
+
       ul.nav.navbar-nav.navbar-right
         if !user
           li(class=title=='Login'?'active':undefined)
