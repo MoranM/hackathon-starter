@@ -1,0 +1,25 @@
+extends ../layout
+block content
+    #mocking.container
+        if user.mockedEndpoints.length > 0
+            ol
+                each mock in user.mockedEndpoints
+                    li
+                        span #{mock.url}
+                        span #{mock.data}
+
+        form.form-horizontal(action='/settings/add-mock', method='POST')
+            input(type='hidden', name='_csrf', value=token)
+            .form-group
+                label.col-sm-4.control-label(for='mockUrl') Enter mock end-point (full path, e.g. http://api.shopyourway/protocol/details):
+                .col-sm-4
+                    input.form-control(type='text', name="mockUrl", id='mock-url')
+            .form-group
+                label.col-sm-4.control-label(for='mockData') Enter mock data:
+                .col-sm-4
+                    textarea.form-control(rows="10", cols="50", name="mockData", id='mock-data')
+            .form-group
+                .col-sm-offset-4.col-sm-4
+                    button.btn.btn.btn-primary(type='submit')
+                        i.fa.fa-keyboard-o
+                        | Submit

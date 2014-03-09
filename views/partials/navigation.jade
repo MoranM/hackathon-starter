@@ -13,7 +13,9 @@
           a(href='/') Home
         if(user)
           li(class=title=='Settings'?'active':undefined)
-            a(href='/settings') Settings
+              a(href='/settings') Settings
+          li(class=title=='Mocking'?'active':undefined)
+              a(href='/mocking') Mocking
 
       ul.nav.navbar-nav.navbar-right
         if !user

@@ -3,7 +3,7 @@ block content
     #settings.container
         if user.connectionMapping.length > 0
             .mapping-routes-container
-                | Redirecting Copy the following URL to your target.xml/config file.
+                | Copy the following URL to your target.xml/config file.
                 br
                 span.base-url http://mobile-util:3001/map/#{user.userName}
                 br
@@ -14,14 +14,13 @@ block content
         form.form-horizontal(action='/settings/add-mapping', method='POST')
             input(type='hidden', name='_csrf', value=token)
             .form-group
-                label.col-sm-3.control-label(for='mappingUrl') Enter your mapping url:
+                label.col-sm-4.control-label(for='mappingUrl') Enter your mapping url:
                 .col-sm-4
                     input.form-control(type='text', name="mappingUrl", id='mapping-url')
-            .form-group
-                .col-sm-offset-3.col-sm-4
                 button.btn.btn.btn-primary(type='submit')
                     i.fa.fa-keyboard-o
                     | Submit
+
 
 
 

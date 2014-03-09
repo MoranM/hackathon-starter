@@ -23,6 +23,11 @@ module.exports = function (app) {
                 mappingUrl = mappingUrl.replace("http://","");
             }
 
+            var mock = isMockedRequired(user,mappingUrl)
+            if(mock){
+                return res.send(mock.data);
+            }
+
             var redirectTo = req.protocol + "://" + req.originalUrl.replace("/map/" + userName, mappingUrl);
             request(redirectTo, function (error, response, html) {
                 if (!error && response.statusCode == 200) {
@@ -31,4 +36,19 @@ module.exports = function (app) {
             })
         });
     });
+}
+
+
+function isMockedRequired(user, mappingUrl){
+    var length = user.mockedEndpoints.length;
+    if(length == 0)
+        return false;
+
+    for (var i = 0; i < length; i++) {
+        var isMockUrl = user.mockedEndpoints[i].url == mappingUrl
+        if(isMockUrl)
+            return user.mockedEndpoints[i]
+    }
+
+    return false;
 }
