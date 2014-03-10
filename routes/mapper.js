@@ -16,15 +16,24 @@ module.exports = function (app) {
         }
 
         User.findOne({userName: userName}, function (err, user) {
-            if (err)return next(arr);
-
-            var mappingUrl = getMappingUrl(user);
-            var mock = isMockedRequired(user, mappingUrl)
-            if (mock) {
-                return res.json(JSON.parse(mock.data));
+            if (err){
+                res.status(500);
+                res.end();
             }
 
-            var redirectTo = req.protocol + "://" + req.originalUrl.replace("/map/" + userName, mappingUrl);
+            var mappingUrl = getMappingUrl(user);
+            var originalUrl = req.originalUrl;
+            var mock = isMockedRequired(user, originalUrl)
+            if (mock) {
+                try{
+                    var data = JSON.parse(mock.data);
+                    return res.json(data);
+                }catch (e){
+                    console.log(e)
+                }
+            }
+
+            var redirectTo = req.protocol + "://" + originalUrl.replace("/map/" + userName, mappingUrl);
             request(redirectTo, function (error, response, html) {
                 if (!error && response.statusCode == 200) {
                     res.json(JSON.parse(html));
@@ -41,22 +50,33 @@ module.exports = function (app) {
         }
 
         User.findOne({userName: userName}, function (err, user) {
-            if (err)return next(arr);
-            var mappingUrl = getMappingUrl(user);
-            var mock = isMockedRequired(user, mappingUrl)
-            if (mock) {
-                return res.json(JSON.parse(mock.data));
+            if (err){
+                res.status(500);
+                res.end();
             }
 
-            var redirectTo = req.protocol + "://" + req.originalUrl.replace("/map/" + userName, mappingUrl);
+            var mappingUrl = getMappingUrl(user);
+            var originalUrl = req.originalUrl;
+            var mock = isMockedRequired(user, originalUrl)
+
+            if (mock) {
+                try{
+                    var data = JSON.parse(mock.data);
+                    return res.json(data);
+                }catch (e){
+                    console.log(e)
+                }
+            }
+
+            var redirectTo = req.protocol + "://" + originalUrl.replace("/map/" + userName, mappingUrl);
             console.log(req.body.username);
             console.log(JSON.stringify(req.body));
 
             request({
                 url: redirectTo,
                 body: querystring.stringify(req.body),
-                method:"POST",
-                headers:{
+                method: "POST",
+                headers: {
                     'Content-type': 'application/x-www-form-urlencoded'
                 }
             }, function (error, response, html) {
@@ -87,11 +107,23 @@ function isMockedRequired(user, mappingUrl) {
     if (length == 0)
         return false;
 
+    var urlPath = extractPathFromUrl(user, mappingUrl);
+
+
     for (var i = 0; i < length; i++) {
-        var isMockUrl = user.mockedEndpoints[i].url == mappingUrl
+        var isMockUrl = user.mockedEndpoints[i].url == urlPath
         if (isMockUrl)
-            return user.mockedEndpoints[i]
+            return user.mockedEndpoints[i];
     }
 
     return false;
+}
+
+
+function extractPathFromUrl(user, mappingUrl) {
+    mappingUrl = mappingUrl.replace("/map/" + user.userName, "");
+    var urlWithoutQuery = mappingUrl.split('?')[0];
+    var path = urlWithoutQuery.split('/').slice(1);
+
+    return path.join('/');
 }

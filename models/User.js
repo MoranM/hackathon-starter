@@ -16,7 +16,7 @@ var userSchema = new mongoose.Schema({
     resetPasswordExpires: Date,
     mockedEndpoints: [
         {
-            url: { type: String, default: '' },
+            url: { type: String, default: '', unique: true },
             data: { type: String, default: '' }
         }
     ]

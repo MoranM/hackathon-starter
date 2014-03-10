@@ -3,10 +3,15 @@ block content
     #mocking.container
         if user.mockedEndpoints.length > 0
             ol
-                each mock in user.mockedEndpoints
+                each mock, i in user.mockedEndpoints
                     li
-                        span #{mock.url}
+                        span #{mock.url}:
+                        br
                         span #{mock.data}
+                        br
+                        span
+                            a(href="/settings/remove-mock?url=#{mock.url}&index=#{i}") remove mock
+
 
         form.form-horizontal(action='/settings/add-mock', method='POST')
             input(type='hidden', name='_csrf', value=token)
